@@ -21,12 +21,13 @@ import dk.tbsalling.aismessages.AISInputStreamReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 public class SimpleDemoApp {
 
     public void runDemo() throws IOException {
 
-        InputStream inputStream = new ByteArrayInputStream(demoNmeaStrings.getBytes());
+        InputStream inputStream = new ByteArrayInputStream(demoNmeaStrings.getBytes(Charset.defaultCharset()));
 
 		System.out.println("AISMessages Demo App");
 		System.out.println("--------------------");
@@ -42,7 +43,7 @@ public class SimpleDemoApp {
 		new SimpleDemoApp().runDemo();
 	}
 
-    private final String demoNmeaStrings = new String(
+    private final String demoNmeaStrings =
         "!AIVDM,1,1,,A,18UG;P0012G?Uq4EdHa=c;7@051@,0*53\n" +
         "!AIVDM,2,1,1,,539L8BT29ked@90F220I8TE<h4pB22222222220o1p?4400Ht00000000000,0*49\n" +
         "!AIVDM,2,2,1,,00000000008,2*6C\n" +
@@ -122,6 +123,6 @@ public class SimpleDemoApp {
         "!AIVDM,1,1,,B,13:112002?o@FNbDS=Ntu:EF00ST,0*3C\n" +
         "!AIVDM,1,1,,A,15>gpr001sG=AnHDjb>V3TwF08Jd,0*72\n" +
         "!AIVDM,1,1,,A,152SGj001to?TvlEg4`H?6UL08Jo,0*36"
-    );
+    ;
 
 }
