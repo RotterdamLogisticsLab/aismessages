@@ -65,7 +65,7 @@ public abstract class AISMessage implements Serializable, CachedDecodedValues {
     /** The NMEA messages which represent this AIS message */
     private NMEAMessage[] nmeaMessages;
 
-    private Metadata metadata;
+    private dk.tbsalling.aismessages.ais.messages.Metadata metadata;
 
     /** Payload expanded to string of 0's and 1's. Use weak reference to allow GC anytime. */
     private transient WeakReference<String> bitString = new WeakReference<>(null);
