@@ -13,6 +13,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -65,7 +67,6 @@ public class AISMessageTest {
 
         Map<String, Object> dataFields = message.dataFields();
 
-        assertThat(dataFields.keySet(), hasSize(19));
         assertThat(dataFields.keySet(), containsInAnyOrder(
                 "toStern",
                 "destination",
@@ -87,6 +88,12 @@ public class AISMessageTest {
                 "repeatIndicator",
                 "transponderClass"
         ));
+
+        assertThat(dataFields.keySet(), hasSize(19));
+
+        assertThat(dataFields.get("eta"), is(equalTo("07-08 19:00")));
+        assertThat(dataFields.get("sourceMmsi.MMSI"), is(equalTo(671128000)));
+        assertThat(dataFields.get("imo.IMO"), is(equalTo(6810158)));
     }
 
     @Test

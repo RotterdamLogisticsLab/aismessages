@@ -78,10 +78,10 @@ public class AidToNavigationReportTest {
         assertNotNull(dataFields);
         assertEquals(23, dataFields.size());
 
-        assertEquals("AidToNavigationReport", dataFields.get("messageType"));
+        assertEquals(AISMessageType.AidToNavigationReport, dataFields.get("messageType"));
         assertEquals(0, dataFields.get("repeatIndicator"));
         assertEquals(995036021, dataFields.get("sourceMmsi.MMSI"));
-        assertEquals("BeaconSpecialMark", dataFields.get("aidType"));
+        assertEquals(AidType.BeaconSpecialMark, dataFields.get("aidType"));
         assertEquals("S6A GLT VIRTU ATON", dataFields.get("name"));
         assertEquals(false, dataFields.get("positionAccurate"));
         assertEquals(151.49791f, dataFields.get("longitude"));
@@ -90,7 +90,7 @@ public class AidToNavigationReportTest {
         assertEquals(0, dataFields.get("toBow"));
         assertEquals(0, dataFields.get("toPort"));
         assertEquals(0, dataFields.get("toStarboard"));
-        assertEquals("Surveyed", dataFields.get("positionFixingDevice"));
+        assertEquals(PositionFixingDevice.Surveyed, dataFields.get("positionFixingDevice"));
         assertEquals(60, dataFields.get("second"));
         assertEquals(false, dataFields.get("offPosition"));
         assertEquals("00000000", dataFields.get("atoNStatus"));

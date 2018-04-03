@@ -22,9 +22,6 @@ import dk.tbsalling.aismessages.ais.messages.types.MMSI;
 import dk.tbsalling.aismessages.nmea.exceptions.InvalidMessage;
 import dk.tbsalling.aismessages.nmea.messages.NMEAMessage;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
@@ -36,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static dk.tbsalling.aismessages.ais.Decoders.UNSIGNED_INTEGER_DECODER;
 import static java.lang.System.Logger.Level.WARNING;
@@ -132,46 +130,42 @@ public abstract class AISMessage implements Serializable, CachedDecodedValues {
     /** Return a map of data field name and values. */
     public  Map<String, Object> dataFields() {
         HashMap<String,Object> map = new HashMap<>();
-        try {
-            PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(this.getClass()).getPropertyDescriptors();
-            for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-                if (!"class".equals(propertyDescriptor.getName())) {
-                    Method readMethod = propertyDescriptor.getReadMethod();
-
-                    Class<?> returnType = readMethod.getReturnType();
-                    if (isComplexType(returnType)) {
-                        Object complexValue = readMethod.invoke(this);
-                        if (complexValue != null) {
-                            PropertyDescriptor[] propertyDescriptors2 = Introspector.getBeanInfo(returnType).getPropertyDescriptors();
-                            for (PropertyDescriptor pd2 : propertyDescriptors2) {
-                                if (!"class".equals(pd2.getName()))
-                                    map.put(propertyDescriptor.getName() + "." + pd2.getName(), pd2.getReadMethod().invoke(complexValue));
-                            }
-                        }
-                    } else if (Class.class.equals(returnType)) {
-                        Object value = readMethod.invoke(this);
-                        map.put(propertyDescriptor.getName(), ((Class) value).getSimpleName());
-                    } else {
-                        Object value = readMethod.invoke(this);
-                        if (value != null)
-                            if (returnType.isEnum())
-                                map.put(propertyDescriptor.getName(), value.toString());
-                            else
-                                map.put(propertyDescriptor.getName(), value);
-                    }
-                }
-            }
-        } catch (IntrospectionException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        addPropertyValuesToMap(map, "",this);
         return map;
     }
 
-    private boolean isComplexType(Class<?> clazz) {
+    private static void addPropertyValuesToMap(Map<String,Object> map, String prefix, Object object) {
+        Method[] methods = object.getClass().getMethods();
+
+        Arrays.stream(methods).filter(isGetter).forEach(getter -> {
+            try {
+                if (isComplexType(getter.getReturnType())) {
+                    addPropertyValuesToMap(map, toPropertyName(getter) + ".", getter.invoke(object));
+                } else {
+                    Object value = getter.invoke(object);
+                    if (value != null)
+                        map.put(prefix + toPropertyName(getter), value);
+                }
+            } catch (IllegalAccessException|InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private final static Predicate<Method> isGetter = method -> {
+        if (!method.getName().startsWith("get") && !method.getName().startsWith("is"))
+            return false;
+        if (method.getName().equals("getClass"))
+            return false;
+        if (method.getParameterTypes().length != 0)
+            return false;
+        if (void.class.equals(method.getReturnType()))
+            return false;
+
+        return true;
+    };
+
+    private static boolean isComplexType(Class<?> clazz) {
         if (clazz.isArray() || clazz.isEnum())
             return false;
         String classname = clazz.getName();
@@ -179,14 +173,16 @@ public abstract class AISMessage implements Serializable, CachedDecodedValues {
           return false;
         }
 
-        boolean hasGetters = false;
-        try {
-            hasGetters = Introspector.getBeanInfo(clazz).getPropertyDescriptors().length > 0;
-        } catch (IntrospectionException e) {
-            e.printStackTrace();
-        }
+        return Arrays.stream(clazz.getMethods()).filter(isGetter).findAny().isPresent();
+    }
 
-        return hasGetters;
+    private static String toPropertyName(Method getter) {
+        String propertyName = getter.getName().startsWith("get") ? getter.getName().substring(3) /* get */ : getter.getName().substring(2) /* is */;
+
+        if (Character.isUpperCase(propertyName.charAt(0)) && Character.isLowerCase(propertyName.charAt(1)))
+            propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
+
+        return propertyName;
     }
 
     protected abstract void checkAISMessage();
