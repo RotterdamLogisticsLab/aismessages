@@ -83,8 +83,15 @@ all you need to do is add these lines to your pom.xml:
 	<dependency>
 	    <groupId>dk.tbsalling</groupId>
 	    <artifactId>aismessages</artifactId>
-	    <version>2.2.1</version>
+	    <version>3.0.0</version>
 	</dependency>
 ```
 
+
+Versioning
 ---
+AISmessages uses [semantic versioning](https://semver.org/).
+
+| Version | Notes |
+|---------|-------|
+|  3.0.0  | Source code upgraded to Java 9. AISMessage#dataFields() returns enum values instead of Strings. |
