@@ -9,6 +9,8 @@ navigation and safety messages compliant with ITU 1371 (NMEA armoured AIS messag
 It exhibits lazy decoding and fully decodes tens of thousands of NMEA armoured AIS messages per second per CPU
 core on an Intel i7-based laptop.
 
+AISmessages requires Java SE 9.
+
 Other AIS projects
 ---
 In addition to AISmessages, its sister project [AISutils](https://github.com/tbsalling/aisutils) offers higher level functionality such as Tracking and Filtering using AISmessages as a foundation.
@@ -84,11 +86,5 @@ all you need to do is add these lines to your pom.xml:
 	    <version>2.2.1</version>
 	</dependency>
 ```
-
----
-
-**Important compiler note!** Due to a [compiler bug](https://bugs.openjdk.java.net/browse/JDK-8062253) in JDK 8u20, 8u25, and 8u31
-AISmessages can only be compiled with older or newer JDK 8 versions than these faulty ones. The project is confirmed to build with
-Oracle JDK 1.8.0_66.
 
 ---
