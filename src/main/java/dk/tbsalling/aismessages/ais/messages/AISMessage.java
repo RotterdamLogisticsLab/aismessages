@@ -125,7 +125,9 @@ public abstract class AISMessage implements Serializable, CachedDecodedValues {
         return messageDigester.digest();
     }
 
-    /** Return a map of data field name and values. */
+    /**
+     * @return a map of data field name and values.
+     */
     public  Map<String, Object> dataFields() {
         HashMap<String,Object> map = new HashMap<>();
         try {
@@ -236,7 +238,7 @@ public abstract class AISMessage implements Serializable, CachedDecodedValues {
         return b;
     }
     
-    protected String getZeroBitStuffedString(Integer endIndex) {
+    protected String getZeroBitStuffedString(int endIndex) {
         String b = getBitString();
 		if (b.length()-endIndex < 0){
 	        StringBuffer c = new StringBuffer(b);
@@ -248,7 +250,7 @@ public abstract class AISMessage implements Serializable, CachedDecodedValues {
         return b;
     }
 
-    protected String getBits(Integer beginIndex, Integer endIndex) {
+    public String getBits(int beginIndex, int endIndex) {
         return getZeroBitStuffedString(endIndex).substring(beginIndex, endIndex);
     }
 
@@ -277,9 +279,9 @@ public abstract class AISMessage implements Serializable, CachedDecodedValues {
     /**
      * Create proper type of AISMessage from 1..n NMEA messages, and
      * attach metadata.
-     * @param metadata
-     * @param nmeaMessages
-     * @return
+     * @param metadata Meta data
+     * @param nmeaMessages NMEA messages
+     * @return AISMessage
      */
     public static AISMessage create(Metadata metadata, NMEAMessage... nmeaMessages) {
         AISMessage aisMessage = create(nmeaMessages);
@@ -289,8 +291,8 @@ public abstract class AISMessage implements Serializable, CachedDecodedValues {
 
     /**
      * Create proper type of AISMessage from 1..n NMEA messages.
-     * @param nmeaMessages
-     * @return
+     * @param nmeaMessages NMEA messages
+     * @return AIS message
      */
     public static AISMessage create(NMEAMessage... nmeaMessages) {
         BiFunction<NMEAMessage[], String, AISMessage> aisMessageConstructor;
