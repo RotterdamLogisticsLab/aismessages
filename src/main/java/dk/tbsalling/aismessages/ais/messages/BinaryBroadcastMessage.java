@@ -18,6 +18,7 @@ package dk.tbsalling.aismessages.ais.messages;
 
 import dk.tbsalling.aismessages.ais.messages.asm.ApplicationSpecificMessage;
 import dk.tbsalling.aismessages.ais.messages.types.AISMessageType;
+import dk.tbsalling.aismessages.nmea.exceptions.InvalidMessage;
 import dk.tbsalling.aismessages.nmea.messages.NMEAMessage;
 
 import java.lang.ref.WeakReference;
@@ -46,6 +47,9 @@ public class BinaryBroadcastMessage extends AISMessage {
     }
 
     protected void checkAISMessage() {
+        if(getNumberOfBits() < 56) {
+            throw new InvalidMessage("Invalid BinaryBroadcastMessage - length too short");
+        }
     }
 
     public final AISMessageType getMessageType() {
