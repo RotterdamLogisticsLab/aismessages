@@ -25,6 +25,7 @@ import java.lang.ref.WeakReference;
 
 import static dk.tbsalling.aismessages.ais.Decoders.BIT_DECODER;
 import static dk.tbsalling.aismessages.ais.Decoders.UNSIGNED_INTEGER_DECODER;
+import static java.lang.String.format;
 
 /**
  * broadcast message with unspecified binary payload. The St. Lawrence Seaway
@@ -46,9 +47,27 @@ public class BinaryBroadcastMessage extends AISMessage {
         super(nmeaMessages, bitString);
     }
 
+    @Override
     protected void checkAISMessage() {
-        if(getNumberOfBits() < 56) {
-            throw new InvalidMessage("Invalid BinaryBroadcastMessage - length too short");
+        super.checkAISMessage();
+
+        final StringBuffer errorMessage = new StringBuffer();
+
+        final int numberOfBits = getNumberOfBits();
+
+        if (numberOfBits <= 56) {
+            errorMessage.append(format("Message of type %s should be at least 56 bits long; not %d.", getMessageType(), numberOfBits));
+
+            if (numberOfBits >= 40)
+                errorMessage.append(format(" Unparseable binary payload: \"%s\".", getBits(40, numberOfBits)));
+        } else if (numberOfBits > 1008)
+            errorMessage.append(format("Message of type %s should be at least 56 bits long; not %d.", getMessageType(), numberOfBits));
+
+        if (errorMessage.length() > 0) {
+            if (numberOfBits >= 38)
+                errorMessage.append(format(" Assumed sourceMmsi: %d.", getSourceMmsi().getMMSI()));
+
+            throw new InvalidMessage(errorMessage.toString());
         }
     }
 
